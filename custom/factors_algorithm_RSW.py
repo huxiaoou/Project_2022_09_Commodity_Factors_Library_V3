@@ -1,9 +1,10 @@
 from custom.XClasses import os, pd, dt, List, Dict
 from custom.XClasses import CManagerLibWriterByDate, CLib1Tab1
+from custom.XFuns import cal_wgt_ary, cal_registered_stock_change_ratio
 
 
-def factors_algorithm_BASIS(
-        basis_window: int,
+def factors_algorithm_RSW(
+        rs_window: int, half_life: int,
         concerned_instruments_universe: List[str],
         database_structure: Dict[str, CLib1Tab1],
         factors_exposure_dir: str,
@@ -11,13 +12,17 @@ def factors_algorithm_BASIS(
         md_stp_date: str,
         extra_data_dir: str,
         major_minor_dir: str,
+        RETURN_SCALE: int = 100,
 ):
-    factor_lbl = "BASIS{:03d}".format(basis_window)
+    factor_lbl = "RSW{:03d}HL{:03d}".format(rs_window, half_life)
+    lag_label = "registered_stock_L{}_HL{}".format(rs_window, half_life)
+    rsw_lower_lim = 10
+    wgt_ary = cal_wgt_ary(t_half_life=half_life, t_size=rs_window, t_ascending=False)
 
     # --- calculate factors by instrument
     all_factor_data = {}
     for instrument in concerned_instruments_universe:
-        instrument_file = "{}.basis.csv.gz".format(instrument)
+        instrument_file = "{}.registered_stock.csv.gz".format(instrument)
         instrument_path = os.path.join(extra_data_dir, instrument_file)
         instrument_df = pd.read_csv(instrument_path, dtype={"trade_date": str}).set_index("trade_date")
 
@@ -28,7 +33,9 @@ def factors_algorithm_BASIS(
         instrument_df: pd.DataFrame = pd.merge(left=major_minor_df, right=instrument_df, how="left", left_index=True, right_index=True)
 
         instrument_df = instrument_df.fillna(method="ffill").fillna(0)
-        instrument_df[factor_lbl] = instrument_df["ANAL_BASISPERCENT2"].rolling(window=basis_window).mean()
+        instrument_df[lag_label] = instrument_df["registered_stock"].rolling(window=rs_window).apply(lambda z: z @ wgt_ary)
+        instrument_df[factor_lbl] = instrument_df[["registered_stock", lag_label]].apply(
+            cal_registered_stock_change_ratio, args=("registered_stock", lag_label, rsw_lower_lim, RETURN_SCALE), axis=1)
         all_factor_data[instrument] = instrument_df[factor_lbl]
 
     # --- reorganize

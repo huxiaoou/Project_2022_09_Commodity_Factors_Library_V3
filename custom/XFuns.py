@@ -81,6 +81,36 @@ def remove_factor_by_date(t_factor_lbl: str, t_factors_by_tm_dir: str):
     return 0
 
 
+def neutralize_by_sector(t_raw_data: pd.Series, t_sector_df: pd.DataFrame, t_weight=None):
+    """
+
+    :param t_raw_data: A pd.Series with length = N. Its value could be exposure or return
+    :param t_sector_df: A 0-1 matrix with size = (M, K).
+                        Element[m, k] = 1 if Instruments[m] is in Sector[k] else 0
+    :param t_weight: A pd.Series with length = N* >= N, make sure index of t_raw_data is a
+                     subset of the index of t_weight. Each element means relative
+                     weight of corresponding instrument when regression.
+    :return:
+    """
+    n = len(t_raw_data)
+    idx = t_raw_data.index
+    if t_weight is None:
+        w: np.ndarray = np.ones(n) / n
+    else:
+        w: np.ndarray = t_weight[idx].values
+
+    w = np.diag(w)
+    x: np.ndarray = t_sector_df.loc[idx].values
+    y: np.ndarray = t_raw_data.values
+
+    xw = x.T.dot(w)
+    xwx_inv = np.linalg.inv(xw.dot(x))
+    xwy = xw.dot(y)
+    b = xwx_inv.dot(xwy)  # b = [XWX]^{-1}[XWY]
+    r = y - x.dot(b)  # r = Y - bX
+    return pd.Series(data=r, index=idx)
+
+
 # -------------------------------------
 # --- Part II: factor exposure ic test ---
 def fun_for_test_ic(t_group_id: int, t_gn: int, t_factor_list: list, t_test_window_list: list, t_factors_stp_date: str):
@@ -237,3 +267,53 @@ def fun_for_factor_return_agg(t_uid_list: list, t_pid_list: list, t_test_window_
     for uid, pid, test_window in product(t_uid_list, t_pid_list, t_test_window_list):
         subprocess.run(["python", "08_factors_return_agg.py", uid, pid, str(test_window), t_factor_stp_date])
     return 0
+
+
+if __name__ == "__main__":
+    sector_classification = {
+        "CU.SHF": "METAL",
+        "AL.SHF": "METAL",
+        "ZN.SHF": "METAL",
+        "A.DCE": "OIL",
+        "M.DCE": "OIL",
+        "Y.DCE": "OIL",
+        "P.DCE": "OIL",
+        "MA.CZC": "CHEM",
+        "TA.CZC": "CHEM",
+        "PP.DCE": "CHEM",
+    }
+
+    sector_df = pd.DataFrame.from_dict({z: {sector_classification[z]: 1} for z in sector_classification}, orient="index").fillna(0)
+    print(sector_df)
+
+    raw_factor = pd.Series({
+        "CU.SHF": 10,
+        "ZN.SHF": 8,
+        "Y.DCE": 3,
+        "P.DCE": 0,
+        "MA.CZC": -2,
+        "TA.CZC": -4,
+    })
+
+    weight = pd.Series({
+        "Y.DCE": 2,
+        "P.DCE": 1,
+        "MA.CZC": 1,
+        "TA.CZC": 1,
+        "CU.SHF": 1,
+        "ZN.SHF": 2,
+    })
+
+    new_factor = neutralize_by_sector(
+        t_raw_data=raw_factor,
+        t_sector_df=sector_df,
+        t_weight=weight,
+    )
+
+    df = pd.DataFrame({
+        "OLD": raw_factor,
+        "WGT": weight,
+        "NEW": new_factor,
+    }).loc[raw_factor.index]
+
+    print(df)

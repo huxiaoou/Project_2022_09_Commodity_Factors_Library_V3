@@ -1,35 +1,37 @@
 from custom.XClasses import os, pd, dt, List, Dict
 from custom.XClasses import CManagerLibWriterByDate, CLib1Tab1
+from custom.XFuns import cal_roll_return, find_price
 
 
-def factors_algorithm_BASIS(
-        basis_window: int,
+def factors_algorithm_TS(
+        ts_window: int,
         concerned_instruments_universe: List[str],
         database_structure: Dict[str, CLib1Tab1],
         factors_exposure_dir: str,
         md_bgn_date: str,
         md_stp_date: str,
-        extra_data_dir: str,
         major_minor_dir: str,
+        md_dir: str,
+        price_type: str = "close",
+        RETURN_SCALE: int = 100,
 ):
-    factor_lbl = "BASIS{:03d}".format(basis_window)
+    factor_lbl = "TS{:03d}".format(ts_window)
 
     # --- calculate factors by instrument
     all_factor_data = {}
     for instrument in concerned_instruments_universe:
-        instrument_file = "{}.basis.csv.gz".format(instrument)
-        instrument_path = os.path.join(extra_data_dir, instrument_file)
-        instrument_df = pd.read_csv(instrument_path, dtype={"trade_date": str}).set_index("trade_date")
-
         major_minor_file = "major.minor.{}.csv.gz".format(instrument)
         major_minor_path = os.path.join(major_minor_dir, major_minor_file)
         major_minor_df = pd.read_csv(major_minor_path, dtype={"trade_date": str}).set_index("trade_date")
-
-        instrument_df: pd.DataFrame = pd.merge(left=major_minor_df, right=instrument_df, how="left", left_index=True, right_index=True)
-
-        instrument_df = instrument_df.fillna(method="ffill").fillna(0)
-        instrument_df[factor_lbl] = instrument_df["ANAL_BASISPERCENT2"].rolling(window=basis_window).mean()
-        all_factor_data[instrument] = instrument_df[factor_lbl]
+        md_file = "{}.md.{}.csv.gz".format(instrument, price_type)
+        md_path = os.path.join(md_dir, md_file)
+        md_df = pd.read_csv(md_path, dtype={"trade_date": str}).set_index("trade_date")
+        shared_bgn_date = max(md_bgn_date, major_minor_df.index[0], md_df.index[0])
+        major_minor_df = major_minor_df[major_minor_df.index >= shared_bgn_date]
+        major_minor_df["n_" + price_type], major_minor_df["d_" + price_type] = zip(*major_minor_df.apply(find_price, args=(md_df,), axis=1))
+        major_minor_df["roll_return"] = major_minor_df.apply(cal_roll_return, args=("n_" + price_type, "d_" + price_type, RETURN_SCALE), axis=1)
+        major_minor_df["roll_return"] = major_minor_df["roll_return"].fillna(method="ffill").rolling(window=ts_window).mean()
+        all_factor_data[instrument] = major_minor_df["roll_return"]
 
     # --- reorganize
     all_factor_df = pd.DataFrame(all_factor_data)

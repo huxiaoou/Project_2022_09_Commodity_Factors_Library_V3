@@ -1,35 +1,33 @@
 from custom.XClasses import os, pd, dt, List, Dict
 from custom.XClasses import CManagerLibWriterByDate, CLib1Tab1
+from custom.XFuns import cal_rolling_corr
 
 
-def factors_algorithm_BASIS(
-        basis_window: int,
+def factors_algorithm_CTP(
+        ctp_window: int,
         concerned_instruments_universe: List[str],
         database_structure: Dict[str, CLib1Tab1],
         factors_exposure_dir: str,
         md_bgn_date: str,
         md_stp_date: str,
-        extra_data_dir: str,
-        major_minor_dir: str,
+        major_return_dir: str,
+        price_type: str = "close",
 ):
-    factor_lbl = "BASIS{:03d}".format(basis_window)
+    factor_lbl = "CTP{:03d}".format(ctp_window)
 
     # --- calculate factors by instrument
     all_factor_data = {}
     for instrument in concerned_instruments_universe:
-        instrument_file = "{}.basis.csv.gz".format(instrument)
-        instrument_path = os.path.join(extra_data_dir, instrument_file)
-        instrument_df = pd.read_csv(instrument_path, dtype={"trade_date": str}).set_index("trade_date")
+        major_return_file = "major_return.{}.{}.csv.gz".format(instrument, price_type)
+        major_return_path = os.path.join(major_return_dir, major_return_file)
+        major_return_df = pd.read_csv(major_return_path, dtype={"trade_date": str}).set_index("trade_date")
+        major_return_df["aver_oi"] = major_return_df["oi"].rolling(window=2).mean()
+        major_return_df["turnover"] = major_return_df["volume"] / major_return_df["aver_oi"]
 
-        major_minor_file = "major.minor.{}.csv.gz".format(instrument)
-        major_minor_path = os.path.join(major_minor_dir, major_minor_file)
-        major_minor_df = pd.read_csv(major_minor_path, dtype={"trade_date": str}).set_index("trade_date")
-
-        instrument_df: pd.DataFrame = pd.merge(left=major_minor_df, right=instrument_df, how="left", left_index=True, right_index=True)
-
-        instrument_df = instrument_df.fillna(method="ffill").fillna(0)
-        instrument_df[factor_lbl] = instrument_df["ANAL_BASISPERCENT2"].rolling(window=basis_window).mean()
-        all_factor_data[instrument] = instrument_df[factor_lbl]
+        x = "turnover"
+        y = "mkt_idx"
+        cal_rolling_corr(t_major_return_df=major_return_df, t_x=x, t_y=y, t_rolling_window=ctp_window, t_corr_lbl=factor_lbl)
+        all_factor_data[instrument] = major_return_df[factor_lbl]
 
     # --- reorganize
     all_factor_df = pd.DataFrame(all_factor_data)

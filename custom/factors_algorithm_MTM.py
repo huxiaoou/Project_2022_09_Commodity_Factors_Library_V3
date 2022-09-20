@@ -1,34 +1,27 @@
 from custom.XClasses import os, pd, dt, List, Dict
 from custom.XClasses import CManagerLibWriterByDate, CLib1Tab1
+from custom.XFuns import cal_period_return
 
 
-def factors_algorithm_BASIS(
-        basis_window: int,
+def factors_algorithm_MTM(
+        mtm_window: int,
         concerned_instruments_universe: List[str],
         database_structure: Dict[str, CLib1Tab1],
         factors_exposure_dir: str,
         md_bgn_date: str,
         md_stp_date: str,
-        extra_data_dir: str,
-        major_minor_dir: str,
+        index_dir: str,
+        RETURN_SCALE: int = 100,
 ):
-    factor_lbl = "BASIS{:03d}".format(basis_window)
+    factor_lbl = "MTM{:03d}".format(mtm_window)
 
-    # --- calculate factors by instrument
     all_factor_data = {}
     for instrument in concerned_instruments_universe:
-        instrument_file = "{}.basis.csv.gz".format(instrument)
-        instrument_path = os.path.join(extra_data_dir, instrument_file)
+        instrument_file = "{}.index.csv.gz".format(instrument)
+        instrument_path = os.path.join(index_dir, instrument_file)
         instrument_df = pd.read_csv(instrument_path, dtype={"trade_date": str}).set_index("trade_date")
-
-        major_minor_file = "major.minor.{}.csv.gz".format(instrument)
-        major_minor_path = os.path.join(major_minor_dir, major_minor_file)
-        major_minor_df = pd.read_csv(major_minor_path, dtype={"trade_date": str}).set_index("trade_date")
-
-        instrument_df: pd.DataFrame = pd.merge(left=major_minor_df, right=instrument_df, how="left", left_index=True, right_index=True)
-
-        instrument_df = instrument_df.fillna(method="ffill").fillna(0)
-        instrument_df[factor_lbl] = instrument_df["ANAL_BASISPERCENT2"].rolling(window=basis_window).mean()
+        instrument_df["major_return"] = (instrument_df["CLOSE"] / instrument_df["CLOSE"].shift(1).fillna(method="bfill") - 1) * RETURN_SCALE
+        instrument_df[factor_lbl] = instrument_df["major_return"].rolling(window=mtm_window).apply(cal_period_return, args=(RETURN_SCALE,), raw=True)
         all_factor_data[instrument] = instrument_df[factor_lbl]
 
     # --- reorganize

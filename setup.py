@@ -3,6 +3,7 @@ import sys
 import datetime as dt
 import numpy as np
 import pandas as pd
+import itertools as ittl
 from skyrim.winterhold import check_and_mkdir, plot_corr
 from skyrim.whiterun import CCalendar
 from skyrim.configurationOffice import SKYRIM_CONST_CALENDAR_PATH
