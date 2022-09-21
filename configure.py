@@ -121,44 +121,31 @@ sector_classification = {
 }
 
 # --- factor settings ---
-# total number of factors =
-basis_window_list = [105, 126, 147]  # 3
-beta_window_list = [10, 21, 63, 126, 189, 252]  # 6
-cv_window_list = [10, 21, 63, 126, 189, 252]  # 6
-csp_window_list = [10, 21, 63, 126, 189, 252]  # 6
-csr_window_list = [10, 21, 63, 126, 189, 252]  # 6
-ctp_window_list = [10, 21, 63, 126, 189, 252]  # 6
-ctr_window_list = [10, 21, 63, 126, 189, 252]  # 6
-cvp_window_list = [10, 21, 63, 126, 189, 252]  # 6
-cvr_window_list = [10, 21, 63, 126, 189, 252]  # 6
-hp_window_list = [10, 21, 63, 126, 189, 252]  # 6
-mtm_window_list = [10, 21, 63, 126, 189, 231, 252]  # 7
-rsw_half_life_window_list = [21, 63, 126]  # 3
-sgm_window_list = [10, 21, 63, 126, 189, 252]  # 6
-size_window_list = [10, 21, 63, 126, 189, 252]  # 6
-skew_window_list = [10, 21, 63, 126, 189, 252]  # 6
-to_window_list = [10, 21, 63, 126, 189, 252]  # 6
-ts_window_list = [1, 5, 10, 21, 63, 126]  # 6
-vol_window_list = [10, 21, 63, 126, 189, 252]  # 6
+factors_args_dict = {
+    "BASIS": [105, 126, 147],
+    "BETA": [10, 21, 63, 126, 189, 252],
+    "CSP": [10, 21, 63, 126, 189, 252],
+    "CSR": [10, 21, 63, 126, 189, 252],
+    "CTP": [10, 21, 63, 126, 189, 252],
+    "CTR": [10, 21, 63, 126, 189, 252],
+    "CV": [10, 21, 63, 126, 189, 252],
+    "CVP": [10, 21, 63, 126, 189, 252],
+    "CVR": [10, 21, 63, 126, 189, 252],
+    "HP": [10, 21, 63, 126, 189, 252],
+    "MTM": [10, 21, 63, 126, 189, 231, 252],
+    "RSW252HL": [21, 63, 126],
+    "SGM": [10, 21, 63, 126, 189, 252],
+    "SIZE": [10, 21, 63, 126, 189, 252],
+    "SKEW": [10, 21, 63, 126, 189, 252],
+    "TO": [10, 21, 63, 126, 189, 252],
+    "TS": [1, 5, 10, 21, 63, 126],
+    "VOL": [10, 21, 63, 126, 189, 252],
+}
 
-factor_list = ["BASIS{:03d}".format(z) for z in basis_window_list] \
-              + ["BETA{:03d}".format(z) for z in beta_window_list] \
-              + ["CV{:03d}".format(z) for z in cv_window_list] \
-              + ["CSP{:03d}".format(z) for z in csp_window_list] \
-              + ["CSR{:03d}".format(z) for z in csr_window_list] \
-              + ["CTP{:03d}".format(z) for z in ctp_window_list] \
-              + ["CTR{:03d}".format(z) for z in ctr_window_list] \
-              + ["CVP{:03d}".format(z) for z in cvp_window_list] \
-              + ["CVR{:03d}".format(z) for z in cvr_window_list] \
-              + ["HP{:03d}".format(z) for z in hp_window_list] \
-              + ["MTM{:03d}".format(z) for z in mtm_window_list] \
-              + ["RSW{:03d}HL{:03d}".format(252, z) for z in rsw_half_life_window_list] \
-              + ["SGM{:03d}".format(z) for z in sgm_window_list] \
-              + ["SIZE{:03d}".format(z) for z in size_window_list] \
-              + ["SKEW{:03d}".format(z) for z in skew_window_list] \
-              + ["TO{:03d}".format(z) for z in to_window_list] \
-              + ["TS{:03d}".format(z) for z in ts_window_list] \
-              + ["VOL{:03d}".format(z) for z in vol_window_list]
+factors_list = []
+for factor_class, arg_lst in factors_args_dict.items():
+    factors_list += ["{}{:03d}".format(factor_class, z) for z in arg_lst]
+factors_list_size = len(factors_list)
 
 # --- test return ---
 test_window_list = [3, 5, 10, 15, 20]  # 5
@@ -271,7 +258,8 @@ database_structure.update({
         )) for z in test_return_lbl_list
 })
 
-test_return_neutral_lbl_list = ["test_return_neutral_{:03d}.{}".format(w, u) for w, u in ittl.product(test_window_list, instruments_universe_options.keys())]
+test_return_neutral_lbl_list = [
+    "test_return_neutral_{:03d}.{}".format(w, u) for w, u in ittl.product(test_window_list, instruments_universe_options.keys())]
 database_structure.update({
     z: CLib1Tab1(
         t_lib_name=z + ".db",
@@ -282,21 +270,6 @@ database_structure.update({
         )) for z in test_return_neutral_lbl_list
 })
 
-factor_lbl_list = [
-    "BASIS147", "BETA252",
-    "CSP063", "CSR063",
-    "CTP063", "CTR063",
-    "CV252",
-    "HP189",
-    "MTM252",
-    "RSW252HL063",
-    "SGM252",
-    "SIZE252",
-    "SKEW252",
-    "TO252",
-    "TS001", "TS126"
-    "VOL252",
-]
 database_structure.update({
     z: CLib1Tab1(
         t_lib_name=z + ".db",
@@ -304,10 +277,11 @@ database_structure.update({
             t_table_name=z,
             t_primary_keys={"trade_date": "TEXT", "instrument": "TEXT"},
             t_value_columns={"value": "REAL"},
-        )) for z in factor_lbl_list
+        )) for z in factors_list
 })
 
-factor_neutral_lbl_list = ["{}.{}".format(f, u) for f, u in ittl.product(factor_lbl_list, instruments_universe_options.keys())]
+factors_neutral_list = [
+    "{}.{}".format(f, u) for f, u in ittl.product(factors_list, instruments_universe_options.keys())]
 database_structure.update({
     z: CLib1Tab1(
         t_lib_name=z + ".db",
@@ -315,5 +289,5 @@ database_structure.update({
             t_table_name=z.split(".")[0],
             t_primary_keys={"trade_date": "TEXT", "instrument": "TEXT"},
             t_value_columns={"value": "REAL"},
-        )) for z in factor_neutral_lbl_list
+        )) for z in factors_neutral_list
 })
