@@ -282,7 +282,21 @@ database_structure.update({
         )) for z in test_return_neutral_lbl_list
 })
 
-factor_lbl_list = ["BASIS147", "CTP063", "MTM252", "RSW252HL063", "TS001", "TS126"]
+factor_lbl_list = [
+    "BASIS147", "BETA252",
+    "CSP063", "CSR063",
+    "CTP063", "CTR063",
+    "CV252",
+    "HP189",
+    "MTM252",
+    "RSW252HL063",
+    "SGM252",
+    "SIZE252",
+    "SKEW252",
+    "TO252",
+    "TS001", "TS126"
+    "VOL252",
+]
 database_structure.update({
     z: CLib1Tab1(
         t_lib_name=z + ".db",

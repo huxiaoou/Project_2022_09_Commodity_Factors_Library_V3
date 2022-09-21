@@ -1,8 +1,10 @@
 import os
+import numpy as np
 import pandas as pd
 import sqlite3 as sql3
 from typing import Dict, List
 import datetime as dt
+from skyrim.whiterun import CInstrumentInfoTable
 
 
 class CTable(object):

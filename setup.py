@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 import itertools as ittl
 from skyrim.winterhold import check_and_mkdir, plot_corr
-from skyrim.whiterun import CCalendar
-from skyrim.configurationOffice import SKYRIM_CONST_CALENDAR_PATH
+from skyrim.whiterun import CCalendar, CInstrumentInfoTable
+from skyrim.configurationOffice import SKYRIM_CONST_CALENDAR_PATH, SKYRIM_CONST_INSTRUMENT_INFO_PATH
 
 """
 Project: Project_2022_09_Commodity_Factors_Library_V3
