@@ -27,7 +27,9 @@ instruments_return_dir = os.path.join(project_data_dir, "instruments_return")
 instruments_corr_dir = os.path.join(project_data_dir, "instruments_corr")
 available_universe_dir = os.path.join(project_data_dir, "available_universe")
 test_return_dir = os.path.join(project_data_dir, "test_return")
+test_return_neutral_dir = os.path.join(project_data_dir, "test_return_neutral")
 factors_exposure_dir = os.path.join(project_data_dir, "factors_exposure")
+factors_exposure_neutral_dir = os.path.join(project_data_dir, "factors_exposure_neutral")
 
 # --- database settings
 DATABASE = os.path.join("/Database")

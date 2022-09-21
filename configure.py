@@ -11,7 +11,7 @@ created @ 2022-05-23
     these two parameters should be input as script arguments
 """
 
-md_bgn_date, md_stp_date = "20140101", "20220920"
+md_bgn_date, md_stp_date = "20140101", (dt.datetime.now() + dt.timedelta(days=1)).strftime("%Y%m%d")
 factors_bgn_date = "20150401"
 
 # universe
@@ -249,7 +249,7 @@ start_date_settings = {
     "ZC.CZC": "20151201",
 }
 
-# database
+# DATABASE STRUCTURE
 database_structure: Dict[str, CLib1Tab1] = {
     "available_universe": CLib1Tab1(
         t_lib_name="available_universe.db",
@@ -291,4 +291,15 @@ database_structure.update({
             t_primary_keys={"trade_date": "TEXT", "instrument": "TEXT"},
             t_value_columns={"value": "REAL"},
         )) for z in factor_lbl_list
+})
+
+factor_neutral_lbl_list = ["{}.{}".format(f, u) for f, u in ittl.product(factor_lbl_list, instruments_universe_options.keys())]
+database_structure.update({
+    z: CLib1Tab1(
+        t_lib_name=z + ".db",
+        t_tab=CTable(
+            t_table_name=z.split(".")[0],
+            t_primary_keys={"trade_date": "TEXT", "instrument": "TEXT"},
+            t_value_columns={"value": "REAL"},
+        )) for z in factor_neutral_lbl_list
 })
