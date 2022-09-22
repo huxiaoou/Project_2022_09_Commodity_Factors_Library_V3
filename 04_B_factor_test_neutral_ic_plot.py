@@ -9,13 +9,9 @@ print("... {} begin to plot cum ic for {}.{}".format(dt.datetime.now(), factor_l
 ic_cumsum_data = {}
 statistics_data = []
 for test_window in test_window_list:
-    # for test_window in [20]:
-    # --- save_id
     test_id = "{}.{}.TW{:03d}".format(factor_lbl, uid, test_window)
     ic_file = "ic.{}.csv.gz".format(test_id)
     ic_path = os.path.join(test_ic_dir, factor_lbl, ic_file)
-    if not os.path.exists(ic_path):
-        continue
     ic_df = pd.read_csv(ic_path, dtype={"trade_date": str}).set_index("trade_date")
     ic_cumsum_data[test_id] = ic_df["cum_ic"]
 

@@ -113,15 +113,21 @@ def neutralize_by_sector(t_raw_data: pd.Series, t_sector_df: pd.DataFrame, t_wei
 
 # -------------------------------------
 # --- Part II: factor exposure ic test ---
-def fun_for_test_ic(t_group_id: int, t_gn: int, t_factor_list: list, t_test_window_list: list, t_factors_stp_date: str):
+def fun_for_test_ic(t_group_id: int, t_gn: int,
+                    t_factor_list: list, t_test_window_list: list):
     iter_list = product(t_factor_list, t_test_window_list)
     for it, (factor_lbl, test_window) in enumerate(iter_list):
         if it % t_gn == t_group_id:
-            # test_id = "{}.TW{:03d}.L{:d}".format(factor_lbl, test_window, t_test_lag)
-            # ic_file = "ic.{}.csv.gz".format(test_id)
-            # ic_path = os.path.join(test_ic_dir, ic_file)
-            # if not os.path.exists(ic_path):
-            subprocess.run(["python", "04_A_factor_test_ic.py", factor_lbl, str(test_window), t_factors_stp_date])
+            subprocess.run(["python", "04_A_factor_test_ic.py", factor_lbl, str(test_window)])
+    return 0
+
+
+def fun_for_test_neutral_ic(t_group_id: int, t_gn: int,
+                            t_factor_list: list, t_uid_list: list, t_test_window_list: list):
+    iter_list = product(t_factor_list, t_uid_list, t_test_window_list)
+    for it, (factor_lbl, uid, test_window) in enumerate(iter_list):
+        if it % t_gn == t_group_id:
+            subprocess.run(["python", "04_A_factor_test_neutral_ic.py", factor_lbl, uid, str(test_window)])
     return 0
 
 
