@@ -4,6 +4,7 @@ from configure import database_structure, md_bgn_date, md_stp_date
 from configure import sector_classification
 from custom.XClasses import CManagerLibReader, CManagerLibWriterByDate
 from custom.XFuns import neutralize_by_sector
+from configure import factors_list
 
 uid = sys.argv[1].upper()
 weight_id = "amt"
@@ -22,7 +23,7 @@ mother_universe_df = pd.DataFrame({"instrument": mother_universe})
 # --- sector df
 sector_df = pd.DataFrame.from_dict({z: {sector_classification[z]: 1} for z in mother_universe}, orient="index").fillna(0)
 
-for factor_lbl in ["BASIS147", "CTP063", "MTM252", "RSW252HL063", "TS001", "TS126"]:
+for factor_lbl in factors_list:
     # --- factor library
     factor_lib_structure = database_structure[factor_lbl]
     factor_lib = CManagerLibReader(t_db_name=factor_lib_structure.m_lib_name, t_db_save_dir=factors_exposure_dir)

@@ -24,7 +24,8 @@ def factors_algorithm_SIZE(
         major_return_path = os.path.join(major_return_dir, major_return_file)
         major_return_df = pd.read_csv(major_return_path, dtype={"trade_date": str}).set_index("trade_date")
         major_return_df[factor_lbl] = major_return_df["oi"] * major_return_df["amt"] / major_return_df["volume"] / MONEY_SCALE * contract_multiplier
-        major_return_df[factor_lbl] = np.log(major_return_df[factor_lbl].rolling(window=size_window).mean())
+        major_return_df[factor_lbl] = major_return_df[factor_lbl].rolling(window=size_window).mean()
+        major_return_df[factor_lbl] = major_return_df[factor_lbl].map(lambda z: np.log(z) if z > 0 else np.nan)
         all_factor_data[instrument] = major_return_df[factor_lbl]
 
     # --- reorganize

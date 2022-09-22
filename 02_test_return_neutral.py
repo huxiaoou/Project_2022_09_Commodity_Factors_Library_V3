@@ -54,7 +54,7 @@ for test_window, uid in ittl.product(test_window_list, instruments_universe_opti
         input_df = mother_universe_df.merge(
             right=weight_df, on=["instrument"], how="inner"
         ).merge(
-            right=test_return_df, on=["instrument"], how="left"
+            right=test_return_df, on=["instrument"], how="inner"
         ).set_index("instrument")
 
         test_return_neutral_srs = neutralize_by_sector(
