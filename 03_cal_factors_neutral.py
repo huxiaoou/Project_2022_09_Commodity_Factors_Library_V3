@@ -37,7 +37,7 @@ for factor_lbl in factors_list:
     # --- update by date
     for trade_date in cne_calendar.get_iter_list(t_bgn_date=md_bgn_date, t_stp_date=md_stp_date, t_ascending=True):
         factor_df = factor_lib.read_by_date(
-            t_table_name=factor_neutral_lib_structure.m_tab.m_table_name,
+            t_table_name=factor_lib_structure.m_tab.m_table_name,
             t_trade_date=trade_date,
             t_value_columns=["instrument", "value"]
         )

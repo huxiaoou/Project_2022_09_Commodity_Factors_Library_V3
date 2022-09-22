@@ -12,7 +12,7 @@ created @ 2022-05-23
 """
 
 md_bgn_date, md_stp_date = "20140101", (dt.datetime.now() + dt.timedelta(days=1)).strftime("%Y%m%d")
-factors_bgn_date = "20150401"
+factors_bgn_date, factors_stp_date = "20150401", md_stp_date
 
 # universe
 concerned_instruments_universe = [

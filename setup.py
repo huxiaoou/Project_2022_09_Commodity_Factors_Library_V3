@@ -4,7 +4,7 @@ import datetime as dt
 import numpy as np
 import pandas as pd
 import itertools as ittl
-from skyrim.winterhold import check_and_mkdir, plot_corr
+from skyrim.winterhold import check_and_mkdir, plot_corr, plot_lines
 from skyrim.whiterun import CCalendar, CInstrumentInfoTable
 from skyrim.configurationOffice import SKYRIM_CONST_CALENDAR_PATH, SKYRIM_CONST_INSTRUMENT_INFO_PATH
 
@@ -30,6 +30,8 @@ test_return_dir = os.path.join(project_data_dir, "test_return")
 test_return_neutral_dir = os.path.join(project_data_dir, "test_return_neutral")
 factors_exposure_dir = os.path.join(project_data_dir, "factors_exposure")
 factors_exposure_neutral_dir = os.path.join(project_data_dir, "factors_exposure_neutral")
+factors_exposure_corr_dir = os.path.join(project_data_dir, "factors_exposure_corr")
+test_ic_dir = os.path.join(project_data_dir, "test_ic")
 
 # --- database settings
 DATABASE = os.path.join("/Database")
