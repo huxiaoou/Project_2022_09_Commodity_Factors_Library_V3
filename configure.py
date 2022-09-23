@@ -291,3 +291,6 @@ database_structure.update({
             t_value_columns={"value": "REAL"},
         )) for z in factors_neutral_list
 })
+
+if __name__ == "__main__":
+    print(",\n".join(factors_list))

@@ -84,12 +84,13 @@ def remove_factor_by_date(t_factor_lbl: str, t_factors_by_tm_dir: str):
 def neutralize_by_sector(t_raw_data: pd.Series, t_sector_df: pd.DataFrame, t_weight=None):
     """
 
-    :param t_raw_data: A pd.Series with length = N. Its value could be exposure or return
-    :param t_sector_df: A 0-1 matrix with size = (M, K).
-                        Element[m, k] = 1 if Instruments[m] is in Sector[k] else 0
+    :param t_raw_data: A pd.Series with length = N. Its value could be exposure or return.
+    :param t_sector_df: A 0-1 matrix with size = (M, K). And M >=N, make sure index of
+                        t_raw_data is a subset of the index of t_weight
+                        Element[m, k] = 1 if Instruments[m] is in Sector[k] else 0.
     :param t_weight: A pd.Series with length = N* >= N, make sure index of t_raw_data is a
-                     subset of the index of t_weight. Each element means relative
-                     weight of corresponding instrument when regression.
+                     subset of the index of t_weight. Each element means relative weight
+                     of corresponding instrument when regression.
     :return:
     """
     n = len(t_raw_data)
@@ -276,6 +277,8 @@ def fun_for_factor_return_agg(t_uid_list: list, t_pid_list: list, t_test_window_
 
 
 if __name__ == "__main__":
+    # ---- TEST EXAMPLE 0
+    print("---- TEST EXAMPLE 0")
     sector_classification = {
         "CU.SHF": "METAL",
         "AL.SHF": "METAL",
@@ -323,3 +326,24 @@ if __name__ == "__main__":
     }).loc[raw_factor.index]
 
     print(df)
+
+    # ---- TEST EXAMPLE 1
+    print("---- TEST EXAMPLE 1")
+    df = pd.DataFrame({
+        "行业分类": ["I1", "I1", "I2", "I2"],
+        "I1": [1, 1, 0, 0],
+        "I2": [0, 0, 1, 1],
+        "原始因子": [100, 80, 32, 8],
+        "原始收益": [24, 6, 45, 15],
+        "因子行业均值": [90, 90, 20, 20],
+        "收益行业均值": [15, 15, 30, 30],
+    }, index=["S1", "S2", "S3", "S4"])
+    df.index.name = "资产"
+    df["中性因子"] = neutralize_by_sector(t_raw_data=df["原始因子"], t_sector_df=df[["I1", "I2"]], t_weight=None)
+    df["中性收益"] = neutralize_by_sector(t_raw_data=df["原始收益"], t_sector_df=df[["I1", "I2"]], t_weight=None)
+    print(df)
+
+    for x, y in product(["原始因子", "中性因子", "I1", "I2"], ["原始收益", "中性收益"]):
+        r = df[[x, y]].corr().loc[x, y]
+        # print("Corr({:4s},{:4s}) = {:>9.4f}".format(x, y, r))
+        print("{} & {} & {:>.3f}\\\\".format(x, y, r))
