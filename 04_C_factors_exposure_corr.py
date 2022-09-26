@@ -2,7 +2,7 @@ from setup import *
 import itertools as ittl
 from configure import factors_bgn_date, factors_stp_date
 from configure import database_structure
-from custom.XClasses import CManagerLibReader, Dict
+from skyrim.falkreath import CManagerLibReader, Dict
 
 check_and_mkdir(factors_exposure_corr_dir)
 

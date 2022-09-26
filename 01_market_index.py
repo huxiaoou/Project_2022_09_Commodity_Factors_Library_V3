@@ -1,5 +1,5 @@
 from setup import *
-from custom.XClasses import CManagerLibReader
+from skyrim.falkreath import CManagerLibReader
 from configure import database_structure
 
 """

@@ -2,7 +2,7 @@ from setup import *
 from configure import md_bgn_date
 from configure import test_window_list, RETURN_SCALE, database_structure
 from custom.XFuns import cal_period_return
-from custom.XClasses import CManagerLibWriterByDate
+from skyrim.falkreath import CManagerLibWriterByDate
 
 check_and_mkdir(test_return_dir)
 

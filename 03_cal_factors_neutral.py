@@ -2,7 +2,7 @@ from setup import *
 from configure import instruments_universe_options
 from configure import database_structure, md_bgn_date, md_stp_date
 from configure import sector_classification
-from custom.XClasses import CManagerLibReader, CManagerLibWriterByDate
+from skyrim.falkreath import CManagerLibReader, CManagerLibWriterByDate
 from custom.XFuns import neutralize_by_sector
 from configure import factors_list
 

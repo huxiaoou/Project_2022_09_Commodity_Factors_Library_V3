@@ -1,7 +1,7 @@
 from setup import *
 from configure import test_lag, database_structure
 from configure import factors_bgn_date, factors_stp_date
-from custom.XClasses import CManagerLibReader
+from skyrim.falkreath import CManagerLibReader
 
 factor_lbl = sys.argv[1].upper()
 uid = sys.argv[2].upper()

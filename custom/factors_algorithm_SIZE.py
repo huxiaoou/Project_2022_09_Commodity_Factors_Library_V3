@@ -1,5 +1,6 @@
-from custom.XClasses import os, np, pd, dt, List, Dict
-from custom.XClasses import CManagerLibWriterByDate, CLib1Tab1, CInstrumentInfoTable
+from skyrim.falkreath import os, pd, dt, List, Dict
+from skyrim.falkreath import CManagerLibWriterByDate, CLib1Tab1
+from skyrim.whiterun import CInstrumentInfoTable
 
 
 def factors_algorithm_SIZE(

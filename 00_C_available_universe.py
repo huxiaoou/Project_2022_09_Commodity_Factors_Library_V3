@@ -2,7 +2,7 @@ from setup import *
 from configure import concerned_instruments_universe, available_universe_rolling_window, available_universe_amt_threshold
 from configure import price_type, YIYUAN, test_window_list
 from configure import database_structure
-from custom.XClasses import CManagerLibWriterByDate
+from skyrim.falkreath import CManagerLibWriterByDate
 
 """
 0.  No bgn_date and stp_date are needed

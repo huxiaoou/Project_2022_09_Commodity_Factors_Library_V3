@@ -1,5 +1,5 @@
-from custom.XClasses import os, pd, dt, List, Dict
-from custom.XClasses import CManagerLibWriterByDate, CLib1Tab1
+from skyrim.falkreath import os, pd, dt, List, Dict
+from skyrim.falkreath import CManagerLibWriterByDate, CLib1Tab1
 
 
 def factors_algorithm_SGM(
