@@ -1,6 +1,6 @@
 import datetime as dt
 import itertools as ittl
-from custom.XClasses import CLib1Tab1, CTable, Dict
+from skyrim.falkreath import CLib1Tab1, CTable, Dict
 
 """
 created @ 2022-05-23
