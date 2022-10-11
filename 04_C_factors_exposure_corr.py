@@ -6,9 +6,12 @@ from skyrim.falkreath import CManagerLibReader, Dict
 
 check_and_mkdir(factors_exposure_corr_dir)
 
-uid = "U23"  # available options = ["", "U23", "U29", "U46"]
+uid = "U46"  # available options = ["", "U23", "U29", "U46"]
 
-test_factor_list_l = ["MTM252", "TS001"]
+# test_factor_list_l = ["MTM252", "TS001"]
+# test_factor_list_r = []
+
+test_factor_list_l = ["CSP063", "CSP126", "CSP189"]
 test_factor_list_r = []
 
 # --- get test factor list

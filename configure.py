@@ -217,12 +217,6 @@ factors_pool_options = {
     "P3": ["BETA252", "SIZE252", "CV252", "SKEW126", "MTM231", "RSW252HL063", "BASIS147", "CTP063"],
 }
 
-# risk_factors_pool_options = {
-#     "P0": ["BETA252", "SIZE252", "CV252", "SKEW126"],
-#     "P1": ["SIZE252", "CV252", "SKEW126"],
-#     "P2": ["BETA252", "SIZE252", "CV252", "SKEW126"],
-# }
-
 # secondary parameters
 RETURN_SCALE = 100
 YIYUAN = 1e8
