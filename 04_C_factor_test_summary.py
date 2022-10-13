@@ -31,7 +31,7 @@ for factor_lbl in factors_list:
 tot_summary_df = pd.concat(summary_dfs_list, ignore_index=True, axis=0)
 print(tot_summary_df)
 
-pd.set_option("display.float_format", "{:.4f}".format)
+pd.set_option("display.float_format", "{:.3f}".format)
 for test_window, test_window_df in tot_summary_df.groupby(by="预测窗口"):
     ic_order_df = test_window_df.sort_values(by="IC均值", ascending=False).head(10)
     ic_order_neutral_df = test_window_df.sort_values(by="IC均值(行业中性化)", ascending=False).head(10)

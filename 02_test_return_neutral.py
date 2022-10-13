@@ -5,6 +5,8 @@ from configure import sector_classification
 from skyrim.falkreath import CManagerLibReader, CManagerLibWriterByDate
 from custom.XFuns import neutralize_by_sector
 
+check_and_mkdir(test_return_neutral_dir)
+
 # --- calendar
 cne_calendar = CCalendar(t_path=SKYRIM_CONST_CALENDAR_PATH)
 
@@ -73,7 +75,7 @@ for test_window, uid in ittl.product(test_window_list, instruments_universe_opti
     test_return_lib.close()
     test_return_neutral_lib.close()
 
-    print("... @ {} Neutralization for test return {:03d} of {} calculated.".format(
+    print("... @ {} Neutralization for test return {:03d} of {} calculated\n".format(
         dt.datetime.now(), test_window, uid))
 
 available_universe_lib.close()

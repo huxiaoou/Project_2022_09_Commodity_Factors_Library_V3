@@ -74,7 +74,7 @@ for factor_lbl in factors_list:
     factor_lib.close()
     factor_neutral_lib.close()
 
-    print("... @ {} Neutralization for factor {:>12s} of {} calculated.".format(
+    print("... @ {} Neutralization for factor {:>12s} of {} calculated\n".format(
         dt.datetime.now(), factor_lbl, uid))
 
 available_universe_lib.close()

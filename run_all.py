@@ -6,15 +6,20 @@ from custom.XFuns import product, fun_for_test_ic, fun_for_test_neutral_ic
 
 switch = {
     "factor": False,
-    "ic_test": True,
-    "ic_test_neutral": True,
+    "factor_neutral": False,
+    "ic_test": False,
+    "ic_test_neutral": False,
     "delinear": False,
     "factor_return": False,
 }
 
 if switch["factor"]:
     subprocess.run(["python", "03_cal_factors.py"])
-    subprocess.run(["python", "03_cal_factors_neutral.py"])
+
+if switch["factor_neutral"]:
+    subprocess.run(["python", "03_cal_factors_neutral.py", "U46"])
+    subprocess.run(["python", "03_cal_factors_neutral.py", "U29"])
+    subprocess.run(["python", "03_cal_factors_neutral.py", "U23"])
 
 if switch["ic_test"]:
     target_factor_list = factors_list

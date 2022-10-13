@@ -16,4 +16,6 @@ return_file = "instruments.return.csv.gz"
 return_path = os.path.join(instruments_return_dir, return_file)
 return_df.to_csv(return_path, float_format="%.8f")
 
+print(return_df)
+
 print("... {} instruments major return calculated".format(dt.datetime.now()))

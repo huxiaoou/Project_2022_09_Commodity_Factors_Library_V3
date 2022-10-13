@@ -230,7 +230,8 @@ start_date_settings = {
     "ZC.CZC": "20151201",
 }
 
-# DATABASE STRUCTURE
+# --- DATABASE STRUCTURE
+# available universe structure
 database_structure: Dict[str, CLib1Tab1] = {
     "available_universe": CLib1Tab1(
         t_lib_name="available_universe.db",
@@ -241,6 +242,7 @@ database_structure: Dict[str, CLib1Tab1] = {
         ))
 }
 
+# test return structure
 test_return_lbl_list = ["test_return_{:03d}".format(w) for w in test_window_list]
 database_structure.update({
     z: CLib1Tab1(
@@ -252,8 +254,9 @@ database_structure.update({
         )) for z in test_return_lbl_list
 })
 
-test_return_neutral_lbl_list = [
-    "test_return_neutral_{:03d}.{}".format(w, u) for w, u in ittl.product(test_window_list, instruments_universe_options.keys())]
+# test return neutral structure
+test_return_neutral_lbl_list = ["test_return_neutral_{:03d}.{}".format(w, u)
+                                for w, u in ittl.product(test_window_list, instruments_universe_options.keys())]
 database_structure.update({
     z: CLib1Tab1(
         t_lib_name=z + ".db",
@@ -264,6 +267,7 @@ database_structure.update({
         )) for z in test_return_neutral_lbl_list
 })
 
+# factor structure
 database_structure.update({
     z: CLib1Tab1(
         t_lib_name=z + ".db",
@@ -274,8 +278,9 @@ database_structure.update({
         )) for z in factors_list
 })
 
-factors_neutral_list = [
-    "{}.{}".format(f, u) for f, u in ittl.product(factors_list, instruments_universe_options.keys())]
+# factors neutral structure
+factors_neutral_list = ["{}.{}".format(f, u)
+                        for f, u in ittl.product(factors_list, instruments_universe_options.keys())]
 database_structure.update({
     z: CLib1Tab1(
         t_lib_name=z + ".db",

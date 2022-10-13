@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pandas as pd
 import scipy.stats as sps
@@ -67,49 +66,36 @@ def cal_wgt_ary(t_half_life: int, t_size: int, t_ascending: bool):
     return _w
 
 
-def cal_sort_corr(x: np.ndarray, r: np.ndarray, t_method: str):
-    return pd.DataFrame({"x": x, "r": r}).corr(method=t_method).at["x", "r"]
-
-
-def remove_factor_by_date(t_factor_lbl: str, t_factors_by_tm_dir: str):
-    for trade_year in os.listdir(t_factors_by_tm_dir):
-        for trade_date in os.listdir(os.path.join(t_factors_by_tm_dir, trade_year)):
-            target_file = "factor.{}.{}.csv.gz".format(trade_date, t_factor_lbl)
-            target_path = os.path.join(t_factors_by_tm_dir, trade_year, trade_date, target_file)
-            if os.path.exists(target_path):
-                os.remove(target_path)
-    return 0
-
-
 def neutralize_by_sector(t_raw_data: pd.Series, t_sector_df: pd.DataFrame, t_weight=None):
     """
 
     :param t_raw_data: A pd.Series with length = N. Its value could be exposure or return.
-    :param t_sector_df: A 0-1 matrix with size = (M, K). And M >=N, make sure index of
-                        t_raw_data is a subset of the index of t_weight
+    :param t_sector_df: A 0-1 matrix with size = (M, K). And M >=N, make sure that index of
+                        t_raw_data is a subset of the index of t_sector_df before call this
+                        function.
                         Element[m, k] = 1 if Instruments[m] is in Sector[k] else 0.
-    :param t_weight: A pd.Series with length = N* >= N, make sure index of t_raw_data is a
-                     subset of the index of t_weight. Each element means relative weight
+    :param t_weight: A pd.Series with length = N1 >= N, make sure that index of t_raw_data
+                     is a subset of the index of t_weight. Each element means relative weight
                      of corresponding instrument when regression.
     :return:
     """
     n = len(t_raw_data)
     idx = t_raw_data.index
     if t_weight is None:
-        w: np.ndarray = np.ones(n) / n
+        _w: np.ndarray = np.ones(n) / n
     else:
-        w: np.ndarray = t_weight[idx].values
+        _w: np.ndarray = t_weight[idx].values
 
-    w = np.diag(w)
-    x: np.ndarray = t_sector_df.loc[idx].values
-    y: np.ndarray = t_raw_data.values
+    _w = np.diag(_w)  # It is allowed that sum of _w may not equal 1
+    _x: np.ndarray = t_sector_df.loc[idx].values
+    _y: np.ndarray = t_raw_data.values
 
-    xw = x.T.dot(w)
-    xwx_inv = np.linalg.inv(xw.dot(x))
-    xwy = xw.dot(y)
+    xw = _x.T.dot(_w)
+    xwx_inv = np.linalg.inv(xw.dot(_x))
+    xwy = xw.dot(_y)
     b = xwx_inv.dot(xwy)  # b = [XWX]^{-1}[XWY]
-    r = y - x.dot(b)  # r = Y - bX
-    return pd.Series(data=r, index=idx)
+    _r = _y - _x.dot(b)  # r = Y - bX
+    return pd.Series(data=_r, index=idx)
 
 
 # -------------------------------------
@@ -330,20 +316,26 @@ if __name__ == "__main__":
     # ---- TEST EXAMPLE 1
     print("---- TEST EXAMPLE 1")
     df = pd.DataFrame({
-        "行业分类": ["I1", "I1", "I2", "I2"],
+        "sector": ["I1", "I1", "I2", "I2"],
         "I1": [1, 1, 0, 0],
         "I2": [0, 0, 1, 1],
-        "原始因子": [100, 80, 32, 8],
-        "原始收益": [24, 6, 45, 15],
-        "因子行业均值": [90, 90, 20, 20],
-        "收益行业均值": [15, 15, 30, 30],
+        "raw_factor": [100, 80, 32, 8],
+        "raw_return": [24, 6, 45, 15],
+        "ave_factor_by_sec": [90, 90, 20, 20],
+        "ave_return_by_sec": [15, 15, 30, 30],
     }, index=["S1", "S2", "S3", "S4"])
     df.index.name = "资产"
-    df["中性因子"] = neutralize_by_sector(t_raw_data=df["原始因子"], t_sector_df=df[["I1", "I2"]], t_weight=None)
-    df["中性收益"] = neutralize_by_sector(t_raw_data=df["原始收益"], t_sector_df=df[["I1", "I2"]], t_weight=None)
+    df["neu_factor"] = neutralize_by_sector(t_raw_data=df["raw_factor"], t_sector_df=df[["I1", "I2"]], t_weight=None)
+    df["neu_return"] = neutralize_by_sector(t_raw_data=df["raw_return"], t_sector_df=df[["I1", "I2"]], t_weight=None)
+
+    # wgt_srs = pd.Series({"S1": 1, "S2": 1, "S3": 2, "S4": 3})
+    # df["neu_factor"] = neutralize_by_sector(t_raw_data=df["raw_factor"], t_sector_df=df[["I1", "I2"]], t_weight=wgt_srs)
+    # df["neu_return"] = neutralize_by_sector(t_raw_data=df["raw_return"], t_sector_df=df[["I1", "I2"]], t_weight=wgt_srs)
+
+    pd.set_option("display.width", 0)
     print(df)
 
-    for x, y in product(["原始因子", "中性因子", "I1", "I2"], ["原始收益", "中性收益"]):
+    for x, y in product(["raw_factor", "neu_factor", "I1", "I2"], ["raw_return", "neu_return"]):
         r = df[[x, y]].corr().loc[x, y]
         # print("Corr({:4s},{:4s}) = {:>9.4f}".format(x, y, r))
         print("{} & {} & {:>.3f}\\\\".format(x, y, r))

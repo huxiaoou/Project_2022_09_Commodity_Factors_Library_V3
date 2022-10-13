@@ -8,10 +8,11 @@ check_and_mkdir(factors_exposure_corr_dir)
 
 uid = "U46"  # available options = ["", "U23", "U29", "U46"]
 
-# test_factor_list_l = ["MTM252", "TS001"]
-# test_factor_list_r = []
-
-test_factor_list_l = ["CSP063", "CSP126", "CSP189"]
+test_factor_list_l = ["MTM252", "TS126"]
+# test_factor_list_l = ["CSP063", "CSP126", "CSP189"]
+# test_factor_list_l = ["CTP063", "CTP126", "CTP189"]
+# test_factor_list_l = ["CVP063", "CVP126", "CVP189"]
+# test_factor_list_l = ["CVP063", "CTP063", "CSP063"]
 test_factor_list_r = []
 
 # --- get test factor list
@@ -59,7 +60,9 @@ for trade_date in trade_calendar.get_iter_list(t_bgn_date=factors_bgn_date, t_st
     test_factor_df = pd.DataFrame(test_factor_data)
     if len(test_factor_df) > 0:
         test_corr = test_factor_df.corr()
-        factor_corr_by_date_data[trade_date] = {"{}-{}".format(z[0], z[1]): test_corr.at[z[0], z[1]] for z in factor_comb_list}
+        factor_corr_by_date_data[trade_date] = {
+            "{}-{}".format(z[0], z[1]): test_corr.at[z[0], z[1]] if z[0] in test_corr.index and z[1] in test_corr.columns else 0
+            for z in factor_comb_list}
 factor_corr_by_date_df = pd.DataFrame.from_dict(factor_corr_by_date_data, orient="index")
 factor_corr_by_date_df_cumsum = factor_corr_by_date_df.cumsum()
 for factor_lib in factor_libs_manager.values():
